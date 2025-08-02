@@ -1,0 +1,9 @@
+avoid-breaking-exported-api = false
+
+check-inconsistent-struct-field-initializers = true
+
+lint-commented-code = false
+
+[[disallowed-types]]
+path = "std::collections::HashMap"
+reason = "Always prefer hashbrown:::HashMap"
