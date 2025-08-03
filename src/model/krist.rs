@@ -19,8 +19,8 @@ pub struct Address {
     pub names: Option<u32>,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
-/// Message of the day.
+#[derive(Debug, Deserialize, Serialize, Clone)]
+/// Message of the day
 pub struct Motd {
     // pub server_time: DateTime<Utc>,
     #[serde(alias = "motd")]
@@ -34,7 +34,9 @@ pub struct Motd {
     pub notice: String,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+/// The package section of the [Motd] struct
+///
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Package {
     pub name: String,
     pub version: String,
@@ -47,7 +49,8 @@ pub struct Package {
     // pub git_hash: String,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+/// The currency section of the [Motd] struct
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Currency {
     pub address_prefix: String,
     pub name_suffix: String,
@@ -55,4 +58,32 @@ pub struct Currency {
     pub name: String,
     #[serde(alias = "currency_symbol")]
     pub symbol: String,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct Transaction {
+    pub id: u32,
+    pub from: Option<String>,
+    pub to: String,
+    pub value: Decimal,
+    pub time: DateTime<Utc>,
+    pub name: Option<String>,
+    // // TODO: Implement metadata parsing
+    pub metadata: Option<String>,
+    pub sent_metaname: Option<String>,
+    pub sent_name: Option<String>,
+    #[allow(clippy::struct_field_names)]
+    #[serde(alias = "type")]
+    pub transaction_type: TransactionType,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone, Copy)]
+#[serde(rename_all = "snake_case")]
+pub enum TransactionType {
+    Mined,
+    Unknown,
+    NamePurchase,
+    NameARecord,
+    NameTransfer,
+    Transfer,
 }

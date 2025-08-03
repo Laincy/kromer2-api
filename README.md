@@ -11,7 +11,7 @@ Both this crate, and the main Kromer2 repo are under heavy development, expect b
     - [x] [Get an address](https://krist.dev/docs/#api-AddressGroup-GetAddress)
     - [x] [List addresses](https://krist.dev/docs/#api-AddressGroup-GetAddresses)
     - [x] [List richest](https://krist.dev/docs/#api-AddressGroup-GetRichAddresses)
-    - [ ] [Get recent transactions from an address](https://krist.dev/docs/#api-AddressGroup-GetAddressTransactions)
+    - [x] [Get recent transactions from an address](https://krist.dev/docs/#api-AddressGroup-GetAddressTransactions)
     - [ ] [Get all names under an address](https://krist.dev/docs/#api-AddressGroup-GetAddressNames)
   - [ ] Misc. Endpoints
     - [ ] [Authenticate an address](https://krist.dev/docs/#api-MiscellaneousGroup-Login)

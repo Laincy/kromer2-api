@@ -1,5 +1,4 @@
 #![deny(clippy::all)]
-#![deny(clippy::suspicious)]
 #![warn(clippy::pedantic)]
 #![warn(clippy::nursery)]
 #![doc = include_str!("../README.md")]
@@ -12,17 +11,24 @@ use reqwest::{Method, Url, header};
 use serde::{Deserialize, Serialize};
 use tracing::info;
 
+/// A client for interacting with the Kromer2 API. See `kromer2_api::endpoints` for info on how to
+/// use it.
 pub struct KromerClient {
     url: Url,
     http: reqwest::Client,
 }
 
 #[derive(Debug, thiserror::Error)]
+/// A top level error containing all the crate's errors.
 pub enum KromerError {
+    /// Errors emmitted by the Kromer2 server itself
     #[error("krist error({error}): {message}")]
+    #[allow(missing_docs)]
     Krist { error: String, message: String },
+    /// Errors caused by Reqwest
     #[error(transparent)]
     Http(#[from] reqwest::Error),
+    /// Errors from URL parsing
     #[error(transparent)]
     Url(#[from] url::ParseError),
 }

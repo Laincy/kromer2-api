@@ -30,6 +30,7 @@
 
         packages = with pkgs; [
           toolchain.default
+          cargo-audit
           openssl
           pkg-config
         ];

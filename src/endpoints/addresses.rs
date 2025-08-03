@@ -1,8 +1,10 @@
+use hashbrown::HashMap;
+
 use crate::{
     KromerClient, KromerError,
     model::{
-        internal::{GetAddressRes, ListAddressesRes, Paginator},
-        krist::Address,
+        internal::{AddressTransactionsRes, GetAddressRes, ListAddressesRes, Paginator},
+        krist::{Address, Transaction},
     },
 };
 
@@ -30,7 +32,6 @@ impl GetAddressEndpoint {
     }
 
     /// Fetches information about the provided address
-    ///
     /// # Errors
     /// Function will return `KromerError::Krist` if the address does not exist or there is a
     /// server side error. See `KromerError` for information on other error variants.
@@ -112,6 +113,64 @@ impl ListRichestEndpoint {
     pub async fn get(&self, client: &KromerClient) -> Result<Vec<Address>, KromerError> {
         client
             .get::<ListAddressesRes, _, _>("/api/krist/addresses/rich", Some(self.0.direct_query()))
+            .await
+    }
+}
+
+#[must_use]
+pub fn list_address_transactions(addr: impl Into<String>) -> AddressTransactionsEndpoint {
+    AddressTransactionsEndpoint {
+        addr: addr.into(),
+        mined: false,
+        ..Default::default()
+    }
+}
+
+#[derive(Debug, Default, Clone)]
+pub struct AddressTransactionsEndpoint {
+    pub(crate) addr: String,
+    pub(crate) page: Paginator,
+    /// excludeMined query param
+    pub(crate) mined: bool,
+}
+
+impl AddressTransactionsEndpoint {
+    #[must_use]
+    pub const fn limit(mut self, limit: u16) -> Self {
+        if limit < 1000 {
+            self.page.limit = limit;
+        }
+        self
+    }
+
+    #[must_use]
+    /// Sets number of addresses you'd like your query to be offset by
+    pub const fn offset(mut self, offset: u16) -> Self {
+        self.page.offset = offset;
+        self
+    }
+
+    #[must_use]
+    /// Sets the excludeMined query param
+    pub const fn exclude_mined(mut self, b: bool) -> Self {
+        self.mined = b;
+        self
+    }
+
+    /// Fetches information about the provided address' recent transactions as a paginated list.
+    /// # Errors
+    /// Function will return `KromerError::Krist` if the address does not exist or there is a
+    /// server side error. See `KromerError` for information on other error variants.
+    pub async fn get(&self, client: &KromerClient) -> Result<Vec<Transaction>, KromerError> {
+        let mut params = HashMap::with_capacity(3);
+        self.page.add_map(&mut params);
+        params.insert("excludeMined", format!("{}", self.mined));
+
+        client
+            .get::<AddressTransactionsRes, _, _>(
+                &format!("/api/krist/addresses/{}/transactions", self.addr),
+                Some(params),
+            )
             .await
     }
 }
